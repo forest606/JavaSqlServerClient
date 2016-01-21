@@ -1,6 +1,7 @@
 package cn.forest;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -30,6 +31,12 @@ public class SqlServerClient {
 			Class.forName(driver);
 			String url = "jdbc:jtds:sqlserver://" + server + ";instance=" + database;
 			connection = DriverManager.getConnection(url, user, password);
+			DatabaseMetaData dbm = connection.getMetaData();
+			try (ResultSet rs = dbm.getTables(null, null, "%", new String[] { "TABLE" })) {
+				while (rs.next()) {
+					System.out.println(rs.getString("TABLE_NAME"));
+				}
+			}
 			return true;
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
