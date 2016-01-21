@@ -25,15 +25,16 @@ public class SqlServerClient {
 		this.password = password;
 	}
 	
-	public Connection openConnection() {
+	public boolean openConnection() {
 		try {
 			Class.forName(driver);
 			String url = "jdbc:jtds:sqlserver://" + server + ";instance=" + database;
 			connection = DriverManager.getConnection(url, user, password);
+			return true;
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
-		return connection;
+		return false;
 	}
 	
 	public void closeConnection() {
@@ -128,14 +129,15 @@ public class SqlServerClient {
 		try (Scanner sc = new Scanner(System.in)) {
 			while (i < LENGTH) {
 				System.out.println(inputTips[i]);
-				input[i] = sc.next();
+				input[i] = sc.nextLine();
 				++i;
 			}
 			
 			SqlServerClient ssc = null;
 			try {
 				ssc = new SqlServerClient(input[0], input[1], input[2], input[3]);
-				ssc.openConnection();
+				if (!ssc.openConnection())
+				    System.exit(1);
 				while (true) {
 					System.out.println("SQL|list|Quit:");
 					String sql = sc.nextLine();
